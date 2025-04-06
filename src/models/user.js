@@ -1,25 +1,69 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
-const userSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
+const userSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+      maxLength: 50,
+    },
+    lastName: {
+      type: String,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true, // remove spaces
+      validate: (val) => {
+        if (!validator.isEmail(val)) {
+          throw new Error("Invalid email");
+        }
+      },
+    },
+    password: {
+      type: String,
+      required: true,
+      validate: (val) => {
+        if (!validator.isStrongPassword(val)) {
+          throw new Error("Weak Password. please add a strong pass");
+        }
+      },
+    },
+    age: {
+      type: Number,
+      min: 18, // min for int
+    },
+    gender: {
+      type: String,
+      validate: (val) => {
+        if (!["male", "female"].includes(val)) {
+          throw new Error("Invalid Gender only male female is allowed");
+        }
+      },
+    },
+    photoUrl: {
+      type: String,
+      default: "https://med.gov.bz/ppu-staff-profiles/dummy-profile-pic/",
+      validate: (val) => {
+        if (!validator.isURL(val)) {
+          throw new Error("Invalid Url");
+        }
+      },
+    },
+    about: {
+      type: String,
+    },
+    skills: {
+      type: [String],
+    },
   },
-  lastName: {
-    type: String,
-  },
-  email: {
-    type: String,
-  },
-  password: {
-    type: String,
-  },
-  age: {
-    type: Number,
-  },
-  gender: {
-    type: String,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
