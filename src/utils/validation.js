@@ -1,5 +1,3 @@
-const validator = require("validator");
-
 const validateUserData = (req) => {
   const { firstName, lastName } = req.body;
   console.log("reaching");
