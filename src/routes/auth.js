@@ -37,13 +37,16 @@ authRouter.post("/devTinder/login", async (req, res) => {
       throw new Error("Invalid Credentials");
     }
     const isPasswordValid = user.validatePassword(password);
-    if (isPasswordValid) {
-      const token = user.getJWT();
-      res.cookie("token", token);
-      res.send({ msg: "login successful" });
-    } else {
-      res.status(400).send({ msg: "Invalid Credentials" });
-    }
+    isPasswordValid.then((isValid) => {
+      console.log(isValid);
+      if (isValid) {
+        const token = user.getJWT();
+        res.cookie("token", token);
+        res.send({ msg: "login successful" });
+      } else {
+        res.status(400).send({ msg: "Invalid Credentials" });
+      }
+    });
   } catch (e) {
     res.status(500).send({ msg: e.message });
   }

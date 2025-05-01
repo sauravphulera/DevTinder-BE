@@ -40,9 +40,12 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
 
 profileRouter.patch("/profile/password", userAuth, async (req, res) => {
   const userId = req.user?._id;
-  const password = req.user?.password;
+  const newPassword = req.body?.password;
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
+    if (!newPassword) {
+      return res.status(400).send({ msg: "New password is required" });
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 10);
     const user = await User.findByIdAndUpdate(
       userId,
       { password: passwordHash },

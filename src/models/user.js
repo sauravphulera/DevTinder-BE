@@ -80,7 +80,8 @@ userSchema.methods.validatePassword = async function (passwordInput) {
   //arrow func will not work since this keyword is used
   const user = this;
   const passwordHash = user?.password;
-  return await bcrypt.compare(passwordInput, passwordHash); // order should always be password and hash in second argument.
+  const isValid = await bcrypt.compare(passwordInput, passwordHash); // order should always be password and hash in second argument.
+  return isValid;
 };
 
 const User = mongoose.model("User", userSchema);
