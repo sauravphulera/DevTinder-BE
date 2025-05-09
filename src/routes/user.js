@@ -10,6 +10,7 @@ const USER_SAFE_DATA = [
   "gender",
   "photoUrl",
   "skills",
+  "createdAt",
 ];
 
 // find a user
@@ -26,6 +27,11 @@ userRouter.get("/devTinder/user", userAuth, async (req, res) => {
     res.status(500).send({ msg: e.message });
   }
   res.send({ users });
+});
+
+// profile
+userRouter.get("/profile/view", userAuth, async (req, res) => {
+  res.send(req.user);
 });
 
 // get users
@@ -86,18 +92,27 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
 
-    const connections = await ConnectionRequest.find({
+    const connectionDocs = await ConnectionRequest.find({
       toUser: loggedInUser?._id,
       status: "interested",
-    }).populate("fromUser", [
-      "firstName",
-      "lastName",
-      "age",
-      "gender",
-      "photoUrl",
-      "skills",
-    ]);
-
+    })
+      .populate("fromUser", [
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "photoUrl",
+        "skills",
+      ])
+      .select("fromUser");
+    console.log(connectionDocs);
+    const connections = connectionDocs.map((doc) => {
+      return {
+        ...doc.fromUser.toObject(),
+        requestId: doc._id,
+      };
+    });
+    // console.log(connections);
     return res.send({ requests: connections });
   } catch (err) {
     res.status(500).send({ msg: err.message });

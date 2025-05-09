@@ -72,7 +72,7 @@ userSchema.methods.getJWT = function () {
   //arrow func will not work since this keyword is used
 
   const user = this;
-  const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: "7d" });
+  const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: "1d" });
   return token;
 };
 
