@@ -1,6 +1,7 @@
 const express = require("express");
 const userAuth = require("../middlewares/auth");
 const { ConnectionRequest, User } = require("../models");
+const { run } = require("../utils/sendEmail");
 
 const connectionRequestsRouter = express.Router();
 
@@ -42,6 +43,8 @@ connectionRequestsRouter.post(
       });
 
       const data = await connectionRequest.save();
+      const emailResponse = await run();
+      console.log(emailResponse);
 
       res.json({
         msg: `${req.user.firstName} is ${status} in ${toUser.firstName}`,
